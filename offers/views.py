@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+
+from customers.models import Customer
 from .models import Offer, OfferItem
 from products.models import Product
 from django.contrib.auth.models import User
@@ -22,7 +24,8 @@ def offer_list(request):
         offers_data = [
             {
                 "id": offer.id,
-                "customer": offer.customer.username,
+                "user": offer.user.username,
+                #"customer": customer.name,
                 "date": offer.date,
                 "sub_total": float(offer.sub_total),
                 "tax": float(offer.tax),
@@ -52,7 +55,8 @@ def offer_detail(request, pk):
     if request.headers.get('Content-Type') == 'application/json':
         offer_data = {
             "id": offer.id,
-            "customer": offer.customer.username,
+            "user": offer.user.username,
+            #"customer": offer.customer.name,
             "date": offer.date,
             "sub_total": float(offer.sub_total),
             "tax": float(offer.tax),
@@ -79,18 +83,20 @@ def offer_create(request):
     View to create a new offer.
     """
     if request.method == 'POST':
-        user_id = request.POST.get('user')
+        #user_id = request.POST.get('user')
         date = request.POST.get('date')
         product_ids = request.POST.getlist('items')
+        customer_ids = request.POST.getlist('customers')
 
         # Calculate sub_total, tax, and total dynamically
         products = Product.objects.filter(id__in=product_ids)
+        customer = Customer.objects.filter(id__in=customer_ids)
         sub_total = sum(product.price for product in products)
         tax = sub_total * Decimal('0.2')  # Assuming a fixed 20% tax rate
         total = sub_total + tax
 
-        user = get_object_or_404(User, id=user_id)
-        offer = Offer.objects.create(user=user, date=date, sub_total=sub_total, tax=tax, total=total)
+        #user = get_object_or_404(User, id=user_id)
+        offer = Offer.objects.create(date=date, sub_total=sub_total, tax=tax, total=total, customer=customer)
 
         for product in products:
             OfferItem.objects.create(offer=offer, product=product, quantity=1)
@@ -98,11 +104,12 @@ def offer_create(request):
         return redirect('offer_list')
 
     # Render the create form template
-    users = User.objects.all()
+    #users=User.objects.all()
+    customers = Customer.objects.all()
     products = Product.objects.all()
     return render(request,
                   'offers/offer_create_form.html',
-                  {'userss': users,
+                  {'customers': customers,
                    'products': products})
 
 
@@ -118,7 +125,7 @@ def offer_edit(request, pk):
     products = Product.objects.all()
 
     if request.method == 'POST':
-        user_id = request.POST.get('user')
+        customer_id = request.POST.get('customer')
         date = request.POST.get('date')
         selected_product_ids = request.POST.getlist('items')
 
@@ -129,7 +136,7 @@ def offer_edit(request, pk):
         total = sub_total + tax
 
         # Update offer details
-        offer.user = get_object_or_404(User, id=user_id)
+        offer.customer = get_object_or_404(Customer, id=customer_id)
         offer.date = date
         offer.sub_total = sub_total
         offer.tax = tax
@@ -144,13 +151,13 @@ def offer_edit(request, pk):
         return redirect('offer_detail', pk=offer.id)
 
     # Render the edit form template
-    users = User.objects.all()
+    customers = Customer.objects.all()
     return render(
         request,
         'offers/offer_edit_form.html',
         {
             'offer': offer,
-            'users': users,
+            'customers': customers,
             'products': products,
             'selected_product_ids': list(selected_product_ids),
         },

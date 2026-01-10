@@ -5,7 +5,7 @@ from products.models import Product
 
 
 class Offer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)  # ForeignKey to Django's built-in User model
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='offers')  # ForeignKey to Django's built-in User model
     date = models.DateField()  # Date of the offer
     sub_total = models.DecimalField(max_digits=10, decimal_places=2)  # Subtotal amount
     tax = models.DecimalField(max_digits=10, decimal_places=2)  # Tax amount
@@ -15,7 +15,7 @@ class Offer(models.Model):
     items = models.ManyToManyField(Product, through='OfferItem')  # Many-to-Many relationship with Product
 
     def __str__(self):
-        return f"Offer #{self.id} - Customer: {self.customer.username}, Total: ${self.total}"
+        return f"Offer #{self.id} - Customer: {self.customer.name}, Total: ${self.total}"
 
     def save(self, *args, **kwargs):
         """
@@ -35,11 +35,12 @@ class Offer(models.Model):
         """
         return cls(
             id=data[0],
-            customer_id=data[1],
+            user_id=data[1],
             date=data[2],
             sub_total=data[3],
             tax=data[4],
             total=data[5],
+            customer=data[6]
         )
 
     @classmethod

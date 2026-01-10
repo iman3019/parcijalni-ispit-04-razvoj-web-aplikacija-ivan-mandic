@@ -79,9 +79,9 @@ def customer_update(request, pk):
     if request.method == 'POST':
         customer.name = request.POST.get('name', customer.name)
         customer.vat_id = request.POST.get('vat_id', customer.vat_id)
-        customer.street = request.POST.get('price', customer.street)
-        customer.city = request.POST.get('price', customer.city)
-        customer.country = request.POST.get('price', customer.country)
+        customer.street = request.POST.get('street', customer.street)
+        customer.city = request.POST.get('city', customer.city)
+        customer.country = request.POST.get('country', customer.country)
         customer.save()
         return redirect('customer_list')
 
