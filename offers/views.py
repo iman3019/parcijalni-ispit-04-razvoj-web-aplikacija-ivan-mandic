@@ -25,7 +25,7 @@ def offer_list(request):
             {
                 "id": offer.id,
                 "user": offer.user.username,
-                #"customer": customer.name,
+                "customer": offer.customer.name,
                 "date": offer.date,
                 "sub_total": float(offer.sub_total),
                 "tax": float(offer.tax),
@@ -56,7 +56,7 @@ def offer_detail(request, pk):
         offer_data = {
             "id": offer.id,
             "user": offer.user.username,
-            #"customer": offer.customer.name,
+            "customer": offer.customer.name,
             "date": offer.date,
             "sub_total": float(offer.sub_total),
             "tax": float(offer.tax),
@@ -83,33 +83,39 @@ def offer_create(request):
     View to create a new offer.
     """
     if request.method == 'POST':
-        #user_id = request.POST.get('user')
+        user_id = request.POST.get('user')
         date = request.POST.get('date')
         product_ids = request.POST.getlist('items')
-        customer_ids = request.POST.getlist('customers')
+        customer_id = request.POST.get('customer')
+        #customers = Customer.objects.filter(id__in=customer_ids)
+        # customer = Customer.objects.create(customer=customer, quantity=1)
+        customer = get_object_or_404(Customer, id=customer_id)
+
 
         # Calculate sub_total, tax, and total dynamically
         products = Product.objects.filter(id__in=product_ids)
-        customer = Customer.objects.filter(id__in=customer_ids)
         sub_total = sum(product.price for product in products)
         tax = sub_total * Decimal('0.2')  # Assuming a fixed 20% tax rate
         total = sub_total + tax
-
-        #user = get_object_or_404(User, id=user_id)
-        offer = Offer.objects.create(date=date, sub_total=sub_total, tax=tax, total=total, customer=customer)
+        
+        user = get_object_or_404(User, id=user_id)
+        offer = Offer.objects.create(user=user, date=date, sub_total=sub_total, tax=tax, total=total, customer=customer)
 
         for product in products:
             OfferItem.objects.create(offer=offer, product=product, quantity=1)
+        
+
 
         return redirect('offer_list')
 
     # Render the create form template
-    #users=User.objects.all()
+    users=User.objects.all()
     customers = Customer.objects.all()
     products = Product.objects.all()
     return render(request,
                   'offers/offer_create_form.html',
-                  {'customers': customers,
+                  {'users': users,
+                   'customers': customers,
                    'products': products})
 
 

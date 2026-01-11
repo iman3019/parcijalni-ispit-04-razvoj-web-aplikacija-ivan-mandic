@@ -39,11 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
+    'mathfilters',
 
     'accounts',  # Custom app for users
     'products',  # Custom app for products
     'offers',  # Custom app for offers
-    'customers',
+    'customers', # Custom app for customers
 ]
 INSTALLED_APPS += ['scripts']
 
