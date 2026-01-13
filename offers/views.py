@@ -87,10 +87,7 @@ def offer_create(request):
         date = request.POST.get('date')
         product_ids = request.POST.getlist('items')
         customer_id = request.POST.get('customer')
-        #customers = Customer.objects.filter(id__in=customer_ids)
-        # customer = Customer.objects.create(customer=customer, quantity=1)
         customer = get_object_or_404(Customer, id=customer_id)
-
 
         # Calculate sub_total, tax, and total dynamically
         products = Product.objects.filter(id__in=product_ids)
@@ -98,6 +95,7 @@ def offer_create(request):
         tax = sub_total * Decimal('0.2')  # Assuming a fixed 20% tax rate
         total = sub_total + tax
         
+        customer = get_object_or_404(Customer, id=customer_id)
         user = get_object_or_404(User, id=user_id)
         offer = Offer.objects.create(user=user, date=date, sub_total=sub_total, tax=tax, total=total, customer=customer)
 
