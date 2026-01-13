@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
-    'mathfilters',
+    'mathfilters', # extension for total in offer detail
 
     'accounts',  # Custom app for users
     'products',  # Custom app for products
