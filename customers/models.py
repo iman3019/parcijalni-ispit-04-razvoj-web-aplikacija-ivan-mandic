@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 # Create your models here.
 class Customer(models.Model):
     name = models.CharField(max_length=150)
-    vat_id = models.IntegerField(null=False, blank=False)
+    vat_id = models.CharField(max_length=11, null=False, blank=False)
     street = models.CharField(max_length=150)
     city = models.CharField(max_length=150)
     country = models.CharField(max_length=150)

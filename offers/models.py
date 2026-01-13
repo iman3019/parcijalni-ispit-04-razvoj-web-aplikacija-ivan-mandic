@@ -5,12 +5,12 @@ from products.models import Product
 
 
 class Offer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='offers')  # ForeignKey to Django's built-in User model
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='offers')  # ForeignKey to Django's built-in User model
     date = models.DateField()  # Date of the offer
     sub_total = models.DecimalField(max_digits=10, decimal_places=2)  # Subtotal amount
     tax = models.DecimalField(max_digits=10, decimal_places=2)  # Tax amount
     total = models.DecimalField(max_digits=10, decimal_places=2)  # Total amount
-    customer = models.ForeignKey(Customer, on_delete=models.DO_NOTHING, related_name='offers')  # ForeignKey to Django's built-in User model
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='offers')  # ForeignKey to Django's built-in User model
 
     items = models.ManyToManyField(Product, through='OfferItem')  # Many-to-Many relationship with Product
 

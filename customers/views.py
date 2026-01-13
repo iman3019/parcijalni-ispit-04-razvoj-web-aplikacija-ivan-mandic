@@ -7,7 +7,7 @@ from .models import Customer
 @login_required
 def customer_list(request):
     """
-    View to display a list of all products.
+    View to display a list of all customers.
     Supports HTML and JSON responses.
     """
     customers = Customer.objects.all()
